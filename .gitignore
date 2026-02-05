@@ -1,3 +1,24 @@
-Faraday/bin
-Faraday/obj
-.idea
+# ==============
+# .NET / C# Core
+# ==============
+# Artifacts
+bin/
+obj/
+*.dll
+*.exe
+*.log
+
+# Rider
+.idea/
+
+# Temporary Files
+*.tmp
+*.temp
+
+# Databases
+*.db
+*.sqlite
+
+# Rider Workspace
+*.sln.DotSettings.user
+*.DotSettings.user
