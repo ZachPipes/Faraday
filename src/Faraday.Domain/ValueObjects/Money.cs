@@ -36,6 +36,26 @@ public record Money(decimal Amount, CurrencyType Currency = CurrencyType.Usd) {
         
         return new Money(Amount - other.Amount);
     }
+    
+    /// <summary>
+    /// Negate the amount (for reversals)
+    /// </summary>
+    public Money Negate() => new Money(-Amount, Currency);
+    
+    /// <summary>
+    /// Check if amount is positive
+    /// </summary>
+    public bool IsPositive() => Amount > 0;
+
+    /// <summary>
+    /// Check if amount is negative
+    /// </summary>
+    public bool IsNegative() => Amount < 0;
+
+    /// <summary>
+    /// Check if amount is zero
+    /// </summary>
+    public bool IsZero() => Amount == 0;
 
     public override string ToString() => $"{Amount:N2} {Currency}";
 }
