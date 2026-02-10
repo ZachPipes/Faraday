@@ -6,10 +6,21 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.0">
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         <PrivateAssets>all</PrivateAssets>
       </PackageReference>
+      <PackageReference Include="Prism.DryIoc" Version="9.0.537" />
+      <PackageReference Include="Prism.Wpf" Version="9.0.537" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Page Update="Views\Shell.xaml">
+        <Generator>MSBuild:Compile</Generator>
+        <XamlRuntime>Wpf</XamlRuntime>
+        <SubType>Designer</SubType>
+      </Page>
     </ItemGroup>
 
     <PropertyGroup>

@@ -22,3 +22,6 @@ obj/
 # Rider Workspace
 *.sln.DotSettings.user
 *.DotSettings.user
+
+# Migrations
+src/Faraday.Infrastructure/Migrations/
