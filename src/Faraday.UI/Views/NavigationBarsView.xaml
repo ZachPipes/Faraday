@@ -24,11 +24,6 @@
                 Content="Dashboard"
                 Command="{Binding NavbarSelectionCommand}"
                 CommandParameter="Dashboard" />
-        <Button x:Name="TEMPSettingsButton" Grid.Column="1"
-                Style="{StaticResource NavbarButtonStyle}"
-                Content="TEMPSettings"
-                Command="{Binding NavbarSelectionCommand}"
-                CommandParameter="TEMPSettings" />
         
         <!-- ~1~ Investing Button @1@ -->
         <!-- <Button x:Name="InvestingButton" Content="Investing" Classes="Navbar" Grid.Column="1" -->

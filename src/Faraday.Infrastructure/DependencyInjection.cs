@@ -12,12 +12,10 @@ namespace Faraday.Infrastructure;
 /// <summary>
 /// Extension methods for registering infrastructure services
 /// </summary>
-public static class DependencyInjection
-{
+public static class DependencyInjection {
     public static IServiceCollection AddInfrastructure(
         this IServiceCollection services,
-        IConfiguration configuration)
-    {
+        IConfiguration configuration) {
         // Register DbContext
         services.AddDbContext<FaradayDbContext>(options =>
             options.UseSqlite(

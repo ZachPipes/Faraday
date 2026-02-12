@@ -7,14 +7,16 @@ using Faraday.Domain.Exceptions;
 namespace Faraday.Domain.Entities;
 
 public class Account : BaseEntity {
-    // ==================
-    // Constant Variables
-    // ==================
+    // ================== //
+    // Constant Variables //
+    // ================== //
     private const int NameLengthLimit = 100;
 
-    // ===============
-    // Class Variables
-    // ===============
+    
+    
+    // ========= //
+    // Variables //
+    // ========= //
     public string Name { get; set; }
     public AccountType Type { get; set; }
     public decimal OpeningBalance { get; private set; }
@@ -22,9 +24,9 @@ public class Account : BaseEntity {
     public bool IsActive { get; private set; } = true;
 
 
-    // ==================
-    // Public Constructor
-    // ==================
+    // ================== //
+    // Public Constructor //
+    // ================== //
     public Account(string name, AccountType type, decimal openingBalance, CurrencyType currency = CurrencyType.Usd) {
         if (name.Length > NameLengthLimit)
             throw new ArgumentException($"Name cannot be more than {NameLengthLimit} characters");
@@ -37,6 +39,11 @@ public class Account : BaseEntity {
         OpeningBalance = openingBalance;
     }
 
+    
+    
+    // ========= //
+    // Functions //
+    // ========= //
     /// <summary>
     /// Calculates the current balance of all transactions
     /// </summary>

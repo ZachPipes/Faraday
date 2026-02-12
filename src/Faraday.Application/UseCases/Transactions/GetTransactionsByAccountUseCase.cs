@@ -10,9 +10,16 @@ namespace Faraday.Application.UseCases.Transactions;
 /// Use case for retrieving all transactions for a specific account
 /// </summary>
 public class GetTransactionsByAccountUseCase {
+    // ============ //
+    // Dependencies //
+    // ============ //
     private readonly ITransactionRepository _transactionRepository;
     private readonly IAccountRepository _accountRepository;
 
+
+    // =========== //
+    // Constructor //
+    // =========== //
     public GetTransactionsByAccountUseCase(
         ITransactionRepository transactionRepository,
         IAccountRepository accountRepository) {
@@ -20,6 +27,10 @@ public class GetTransactionsByAccountUseCase {
         _accountRepository = accountRepository;
     }
 
+
+    // ======== //
+    // Function //
+    // ======== //
     public async Task<IEnumerable<TransactionDto>> ExecuteAsync(Guid accountId, bool includeVoided = false) {
         // Validate: Account exists
         Account? account = await _accountRepository.GetByIdAsync(accountId);

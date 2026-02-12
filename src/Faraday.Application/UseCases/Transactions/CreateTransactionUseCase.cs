@@ -10,9 +10,16 @@ namespace Faraday.Application.UseCases.Transactions;
 /// Use case for creating a new transaction
 /// </summary>
 public class CreateTransactionUseCase {
+    // ============ //
+    // Dependencies //
+    // ============ //
     private readonly ITransactionRepository _transactionRepository;
     private readonly IAccountRepository _accountRepository;
 
+    
+    // =========== //
+    // Constructor //
+    // =========== //
     public CreateTransactionUseCase(
         ITransactionRepository transactionRepository,
         IAccountRepository accountRepository) {
@@ -20,6 +27,10 @@ public class CreateTransactionUseCase {
         _accountRepository = accountRepository;
     }
 
+    
+    // ======== //
+    // Function //
+    // ======== //
     public async Task<TransactionDto> ExecuteAsync(CreateTransactionRequest request) {
         // Validate: Account must exist
         Account? account = await _accountRepository.GetByIdAsync(request.AccountId);

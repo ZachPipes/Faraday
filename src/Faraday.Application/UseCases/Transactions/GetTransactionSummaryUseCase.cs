@@ -11,12 +11,23 @@ namespace Faraday.Application.UseCases.Transactions;
 /// Use case for getting transaction summary statistics for a date range
 /// </summary>
 public class GetTransactionSummaryUseCase {
+    // ============ //
+    // Dependencies //
+    // ============ //
     private readonly ITransactionRepository _transactionRepository;
 
+
+    // =========== //
+    // Constructor //
+    // =========== //
     public GetTransactionSummaryUseCase(ITransactionRepository transactionRepository) {
         _transactionRepository = transactionRepository;
     }
 
+
+    // ======== //
+    // Function //
+    // ======== //
     public async Task<TransactionSummaryDto> ExecuteAsync(DateRange dateRange) {
         // Get transactions in date range
         IEnumerable<Transaction> transactions = await _transactionRepository.GetByDateRangeAsync(dateRange);

@@ -1,4 +1,6 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿// src/Faraday.UI/ViewModels/ViewModelBase.cs
+
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace Faraday.UI.ViewModels;
 

@@ -10,12 +10,23 @@ namespace Faraday.Application.UseCases.Accounts;
 /// Use case for creating a new account
 /// </summary>
 public class CreateAccountUseCase {
+    // ============ //
+    // Dependencies //
+    // ============ //
     private readonly IAccountRepository _accountRepository;
 
+
+    // =========== //
+    // Constructor //
+    // =========== //
     public CreateAccountUseCase(IAccountRepository accountRepository) {
         _accountRepository = accountRepository;
     }
 
+
+    // ======== //
+    // Function //
+    // ======== //
     public async Task<AccountDto> ExecuteAsync(CreateAccountRequest request) {
         // Validate: Check if account name already exists
         bool exists = await _accountRepository.ExistsWithNameAsync(request.Name);

@@ -9,12 +9,23 @@ namespace Faraday.Application.UseCases.Transactions;
 /// Use case for voiding (soft deleting) a transaction
 /// </summary>
 public class VoidTransactionUseCase {
+    // ============ //
+    // Dependencies //
+    // ============ //
     private readonly ITransactionRepository _transactionRepository;
 
+
+    // =========== //
+    // Constructor //
+    // =========== //
     public VoidTransactionUseCase(ITransactionRepository transactionRepository) {
         _transactionRepository = transactionRepository;
     }
 
+
+    // ======== //
+    // Function //
+    // ======== //
     public async Task ExecuteAsync(Guid transactionId) {
         // Get transaction
         Transaction? transaction = await _transactionRepository.GetByIdAsync(transactionId);

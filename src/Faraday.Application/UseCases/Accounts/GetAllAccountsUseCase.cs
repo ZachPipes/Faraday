@@ -10,9 +10,16 @@ namespace Faraday.Application.UseCases.Accounts;
 /// Use case for retrieving all accounts with their current balances
 /// </summary>
 public class GetAllAccountsUseCase {
+    // ============ //
+    // Dependencies //
+    // ============ //
     private readonly IAccountRepository _accountRepository;
     private readonly ITransactionRepository _transactionRepository;
 
+    
+    // =========== //
+    // Constructor //
+    // =========== //
     public GetAllAccountsUseCase(
         IAccountRepository accountRepository,
         ITransactionRepository transactionRepository) {
@@ -20,6 +27,10 @@ public class GetAllAccountsUseCase {
         _transactionRepository = transactionRepository;
     }
 
+    
+    // ======== //
+    // Function //
+    // ======== //
     public async Task<IEnumerable<AccountDto>> ExecuteAsync(bool includeInactive = false) {
         // Get accounts
         IEnumerable<Account> accounts = includeInactive

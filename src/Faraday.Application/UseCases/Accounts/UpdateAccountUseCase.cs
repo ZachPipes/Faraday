@@ -10,12 +10,23 @@ namespace Faraday.Application.UseCases.Accounts;
 /// Use case for updating an account's name
 /// </summary>
 public class UpdateAccountUseCase {
+    // ============ //
+    // Dependencies //
+    // ============ //
     private readonly IAccountRepository _accountRepository;
 
+    
+    // =========== //
+    // Constructor //
+    // =========== //
     public UpdateAccountUseCase(IAccountRepository accountRepository) {
         _accountRepository = accountRepository;
     }
 
+    
+    // ======== //
+    // Function //
+    // ======== //
     public async Task<AccountDto> ExecuteAsync(UpdateAccountRequest request) {
         // Get existing account
         Account? account = await _accountRepository.GetByIdAsync(request.Id);

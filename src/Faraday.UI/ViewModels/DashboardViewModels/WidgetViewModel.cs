@@ -1,14 +1,16 @@
-﻿using CommunityToolkit.Mvvm.Input;
+﻿// src/Faraday.UI/ViewModels/DashboardViewModels/WidgetViewModel.cs
+
+using CommunityToolkit.Mvvm.Input;
 
 namespace Faraday.UI.ViewModels.DashboardViewModels;
 
 public partial class WidgetViewModel : ViewModelBase {
-    public WidgetViewModel() {
-        
-    }
-    
-    
-    
+    // =========== //
+    // Constructor //
+    // =========== //
+    public WidgetViewModel() { }
+
+
     // ======== //
     // Commands //
     // ======== //
