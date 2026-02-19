@@ -1,8 +1,12 @@
 ﻿<prism:PrismApplication x:Class="Faraday.UI.App"
                         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                        xmlns:prism="http://prismlibrary.com/">
+                        xmlns:prism="http://prismlibrary.com/"
+                        xmlns:converters="clr-namespace:Faraday.UI.Services.Converters">
     <Application.Resources>
+        <!-- Converters -->
+        <converters:EnumToBooleanConverter x:Key="EnumToBooleanConverter" />
+        
         <!-- Navbar Button Style -->
         <Style x:Key="NavbarButtonStyle" TargetType="Button">
             <Setter Property="Foreground" Value="White" />

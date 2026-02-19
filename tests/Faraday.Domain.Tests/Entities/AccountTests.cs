@@ -58,8 +58,8 @@ public class AccountTests {
         // Arrange
         Account account = new("Test", AccountType.Checking, 1000m);
         List<Transaction> transactions = [
-            new(DateTime.UtcNow, 500m, "Income", account.Id),
-            new(DateTime.UtcNow, -200m, "Expense", account.Id)
+            new(DateTime.UtcNow, 500m, "Income", 0, account.Id),
+            new(DateTime.UtcNow, -200m, "Expense", 0, account.Id)
         ];
 
         // Act
@@ -73,7 +73,7 @@ public class AccountTests {
     public void CalculateCurrentBalance_WithVoidedTransaction_ExcludesVoidedAmount() {
         // Arrange
         Account account = new("Test", AccountType.Checking, 1000m);
-        Transaction transaction = new(DateTime.UtcNow, -100m, "Expense", account.Id);
+        Transaction transaction = new(DateTime.UtcNow, -100m, "Expense", 0, account.Id);
         transaction.Void();
 
         List<Transaction> transactions = [transaction];

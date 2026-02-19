@@ -74,11 +74,11 @@ public class GetAllAccountsUseCaseTests {
         Account account2 = CreateAccountWithId("Account 2", AccountType.Savings, 2000m);
 
         List<Transaction> transactions1 = [
-            new(DateTime.UtcNow, 500m, "Income", account1.Id)
+            new(DateTime.UtcNow, 500m, "Income", 0, account1.Id)
         ];
 
         List<Transaction> transactions2 = [
-            new(DateTime.UtcNow, -300m, "Expense", account2.Id)
+            new(DateTime.UtcNow, -300m, "Expense", 0, account2.Id)
         ];
 
         _mockAccountRepository

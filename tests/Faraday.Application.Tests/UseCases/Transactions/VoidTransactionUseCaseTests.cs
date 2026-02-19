@@ -20,7 +20,7 @@ public class VoidTransactionUseCaseTests {
     public async Task ExecuteAsync_WithValidTransaction_VoidsTransaction() {
         // Arrange
         Guid transactionId = Guid.NewGuid();
-        Transaction transaction = new(DateTime.UtcNow, 100m, "Test", Guid.NewGuid());
+        Transaction transaction = new(DateTime.UtcNow, 100m, "Test",  0,Guid.NewGuid());
         typeof(Transaction).GetProperty(nameof(Transaction.Id))!
             .SetValue(transaction, transactionId);
 

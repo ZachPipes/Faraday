@@ -1,5 +1,7 @@
 ﻿// src/Faraday.Domain/Entities/Account.cs
 
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Transactions;
 using Faraday.Domain.Common;
 using Faraday.Domain.Enums;
 using Faraday.Domain.Exceptions;
@@ -12,8 +14,7 @@ public class Account : BaseEntity {
     // ================== //
     private const int NameLengthLimit = 100;
 
-    
-    
+
     // ========= //
     // Variables //
     // ========= //
@@ -22,12 +23,15 @@ public class Account : BaseEntity {
     public decimal OpeningBalance { get; private set; }
     public CurrencyType Currency { get; set; }
     public bool IsActive { get; private set; } = true;
+    public decimal CurrentBalance { get; set; }
+    public InstitutionType Institution { get; set; }
 
 
     // ================== //
     // Public Constructor //
     // ================== //
-    public Account(string name, AccountType type, decimal openingBalance, CurrencyType currency = CurrencyType.Usd) {
+    public Account(string name, AccountType type, decimal openingBalance, CurrencyType currency = CurrencyType.Usd,
+        InstitutionType institution = InstitutionType.Cash) {
         if (name.Length > NameLengthLimit)
             throw new ArgumentException($"Name cannot be more than {NameLengthLimit} characters");
         if (string.IsNullOrEmpty(name))
@@ -37,10 +41,10 @@ public class Account : BaseEntity {
         Type = type;
         Currency = currency;
         OpeningBalance = openingBalance;
+        Institution =  institution;
     }
 
-    
-    
+
     // ========= //
     // Functions //
     // ========= //
@@ -63,7 +67,9 @@ public class Account : BaseEntity {
 
         decimal transactionSum = transactionList.Where(t => !t.IsVoid).Sum(t => t.Amount);
 
-        return OpeningBalance + transactionSum;
+        CurrentBalance = OpeningBalance + transactionSum;
+
+        return CurrentBalance;
     }
 
     /// <summary>
@@ -117,7 +123,7 @@ public class Account : BaseEntity {
 
         if (!IsActive)
             throw new InvalidAccountOperationException(
-                Id, 
+                Id,
                 "Cannot add transactions to an inactive account");
     }
 }

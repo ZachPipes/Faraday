@@ -20,6 +20,7 @@ public class Transaction : BaseEntity {
     public decimal Amount { get; set; }
     public string Description { get; set; } = string.Empty;
     public TransactionType Type { get; set; }
+    public int No { get; set; }
 
     public Guid AccountId { get; set; }
 
@@ -32,12 +33,13 @@ public class Transaction : BaseEntity {
     // ================== //
     // Public Constructor //
     // ================== //
-    public Transaction(DateTime date, decimal amount, string description, Guid accountId) {
+    public Transaction(DateTime date, decimal amount, string description, int no, Guid accountId) {
         ValidateCommonFields(date, description);
 
         Date = date;
         Amount = amount;
         Description = description;
+        No = no;
         AccountId = accountId;
         Type = amount >= 0 ? TransactionType.Income : TransactionType.Expense;
     }

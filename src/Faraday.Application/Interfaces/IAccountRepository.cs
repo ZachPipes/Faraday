@@ -13,6 +13,11 @@ public interface IAccountRepository {
     /// Get an account by its ID
     /// </summary>
     Task<Account?> GetByIdAsync(Guid id);
+    
+    /// <summary>
+    /// Get an account by its name
+    /// </summary>
+    Task<Account?> GetByNameAsync(string name);
 
     /// <summary>
     /// Get all active accounts

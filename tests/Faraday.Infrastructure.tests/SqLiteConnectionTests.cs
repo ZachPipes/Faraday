@@ -55,6 +55,7 @@ public class SqLiteConnectionTests : IDisposable {
             DateTime.UtcNow,
             500m,
             "Test Transaction",
+            0,
             account.Id);
 
         // Act

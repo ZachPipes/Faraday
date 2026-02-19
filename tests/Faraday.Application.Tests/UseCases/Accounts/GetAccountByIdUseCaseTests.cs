@@ -33,8 +33,8 @@ public class GetAccountByIdUseCaseTests {
             .SetValue(account, accountId);
 
         List<Transaction> transactions = [
-            new(DateTime.UtcNow, 500m, "Income", accountId),
-            new(DateTime.UtcNow, -200m, "Expense", accountId)
+            new(DateTime.UtcNow, 500m, "Income", 0, accountId),
+            new(DateTime.UtcNow, -200m, "Expense", 0, accountId)
         ];
 
         _mockAccountRepository

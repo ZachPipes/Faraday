@@ -32,11 +32,11 @@
                             <DataTemplate>
                                 <Button Margin="10" HorizontalAlignment="Stretch"
                                         Command="{Binding DataContext.SwitchCurrentAccountCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                        CommandParameter="{Binding Name}">
+                                        CommandParameter="{Binding }">
                                     <TextBlock>
                                         <Run Text="{Binding Name}" />
                                         <Run Text=" | $" />
-                                        <Run Text="{Binding Balance}" />
+                                        <Run Text="{Binding CurrentBalance}" />
                                     </TextBlock>
                                 </Button>
                             </DataTemplate>
@@ -44,7 +44,7 @@
                     </ItemsControl>
                     
                     <Button Content="+ Add an Account" Margin="10" HorizontalAlignment="Stretch"
-                            Command="{Binding OpenAddAccountWindowCommand}" />
+                            Command="{Binding OpenAddAccountViewCommand}" />
                 </StackPanel>
             </Border>
         </ScrollViewer>

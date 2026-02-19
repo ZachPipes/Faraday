@@ -1,12 +1,18 @@
 ﻿// src/Faraday.UI/App.xaml.cs
 
+using System.IO;
 using System.Windows;
 using Faraday.Application.Interfaces;
+using Faraday.Infrastructure.Persistence;
 using Faraday.Infrastructure.Repositories;
+using Faraday.UI.Services;
 using Faraday.UI.ViewModels;
 using Faraday.UI.ViewModels.DashboardViewModels;
+using Faraday.UI.ViewModels.DashboardViewModels.AccountManagementViewModels;
 using Faraday.UI.Views;
 using Faraday.UI.Views.DashboardViews;
+using Faraday.UI.Views.DashboardViews.AccountManagementViews;
+using Microsoft.EntityFrameworkCore;
 
 namespace Faraday.UI;
 
@@ -34,11 +40,23 @@ public partial class App : PrismApplication {
     /// and register views for navigation.
     /// </param>
     protected override void RegisterTypes(IContainerRegistry containerRegistry) {
+        // ================ //
+        // Database Handler //
+        // ================ //
+        DbContextOptionsBuilder<FaradayDbContext> optionsBuilder = new();
+        optionsBuilder.UseSqlite($"Data Source={AppState.Instance.DbFolderPath}");
+
+        FaradayDbContext dbContext = new(optionsBuilder.Options);
+        dbContext.Database.EnsureCreated();
+        containerRegistry.GetContainer().RegisterInstance(dbContext);
+
         // ======== //
         // Services //
         // ======== //
         containerRegistry.Register<IAccountRepository, AccountRepository>();
         containerRegistry.Register<ITransactionRepository, TransactionRepository>();
+        containerRegistry.Register<IWindowService, WindowService>();
+        containerRegistry.Register<ICSVService, CSVService>();
 
         // ===== //
         // Views //
@@ -49,6 +67,7 @@ public partial class App : PrismApplication {
         // Dashboard Views
         containerRegistry.RegisterForNavigation<DashboardView, DashboardViewModel>();
         containerRegistry.RegisterForNavigation<WidgetView, WidgetViewModel>();
+        containerRegistry.RegisterDialog<AddAccountView, AddAccountViewModel>();
 
         // Settings Views
     }

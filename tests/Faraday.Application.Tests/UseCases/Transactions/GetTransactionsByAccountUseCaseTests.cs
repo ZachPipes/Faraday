@@ -29,8 +29,8 @@ public class GetTransactionsByAccountUseCaseTests {
         Account account = CreateAccountWithId("Test Account", AccountType.Checking, 1000m, accountId);
 
         List<Transaction> transactions = [
-            new(DateTime.UtcNow.AddDays(-2), 500m, "Income", accountId),
-            new(DateTime.UtcNow.AddDays(-1), -200m, "Expense", accountId)
+            new(DateTime.UtcNow.AddDays(-2), 500m, "Income", 0, accountId),
+            new(DateTime.UtcNow.AddDays(-1), -200m, "Expense", 0, accountId)
         ];
 
         _mockAccountRepository
@@ -56,9 +56,9 @@ public class GetTransactionsByAccountUseCaseTests {
         Account account = CreateAccountWithId("Test Account", AccountType.Checking, 1000m, accountId);
 
         List<Transaction> transactions = [
-            new(DateTime.UtcNow.AddDays(-5), 100m, "Oldest", accountId),
-            new(DateTime.UtcNow.AddDays(-1), 200m, "Recent", accountId),
-            new(DateTime.UtcNow.AddDays(-3), 150m, "Middle", accountId)
+            new(DateTime.UtcNow.AddDays(-5), 100m, "Oldest", 0, accountId),
+            new(DateTime.UtcNow.AddDays(-1), 200m, "Recent", 0, accountId),
+            new(DateTime.UtcNow.AddDays(-3), 150m, "Middle", 0, accountId)
         ];
 
         _mockAccountRepository
@@ -85,8 +85,8 @@ public class GetTransactionsByAccountUseCaseTests {
         Guid accountId = Guid.NewGuid();
         Account account = CreateAccountWithId("Test Account", AccountType.Checking, 1000m, accountId);
 
-        Transaction activeTransaction = new(DateTime.UtcNow, 100m, "Active", accountId);
-        Transaction voidedTransaction = new(DateTime.UtcNow, 200m, "Voided", accountId);
+        Transaction activeTransaction = new(DateTime.UtcNow, 100m, "Active", 0, accountId);
+        Transaction voidedTransaction = new(DateTime.UtcNow, 200m, "Voided", 0, accountId);
         voidedTransaction.Void();
 
         _mockAccountRepository

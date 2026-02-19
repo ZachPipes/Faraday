@@ -14,7 +14,7 @@ public class TransactionTests {
         DateTime date = DateTime.UtcNow;
 
         // Act
-        Transaction transaction = new(date, 500m, "Salary", accountId);
+        Transaction transaction = new(date, 500m, "Salary", 0, accountId);
 
         // Assert
         Assert.Equal(500m, transaction.Amount);
@@ -29,7 +29,7 @@ public class TransactionTests {
         DateTime date = DateTime.UtcNow;
 
         // Act
-        Transaction transaction = new(date, -100m, "Groceries", accountId);
+        Transaction transaction = new(date, -100m, "Groceries", 0, accountId);
 
         // Assert
         Assert.Equal(-100m, transaction.Amount);
@@ -44,13 +44,13 @@ public class TransactionTests {
 
         // Act & Assert
         Assert.Throws<ArgumentException>(() =>
-            new Transaction(DateTime.UtcNow, 100m, "", accountId));
+            new Transaction(DateTime.UtcNow, 100m, "", 0, accountId));
     }
 
     [Fact]
     public void Void_WhenNotVoided_VoidsTransaction() {
         // Arrange
-        Transaction transaction = new(DateTime.UtcNow, 100m, "Test", Guid.NewGuid());
+        Transaction transaction = new(DateTime.UtcNow, 100m, "Test", 0, Guid.NewGuid());
 
         // Act
         transaction.Void();
@@ -62,7 +62,7 @@ public class TransactionTests {
     [Fact]
     public void Void_WhenAlreadyVoided_ThrowsException() {
         // Arrange
-        Transaction transaction = new(DateTime.UtcNow, 100m, "Test", Guid.NewGuid());
+        Transaction transaction = new(DateTime.UtcNow, 100m, "Test", 0, Guid.NewGuid());
         transaction.Void();
 
         // Act & Assert
@@ -72,7 +72,7 @@ public class TransactionTests {
     [Fact]
     public void UpdateDescription_WithValidDescription_UpdatesDescription() {
         // Arrange
-        Transaction transaction = new(DateTime.UtcNow, 100m, "Old", Guid.NewGuid());
+        Transaction transaction = new(DateTime.UtcNow, 100m, "Old",  0,Guid.NewGuid());
 
         // Act
         transaction.UpdateDescription("New Description");

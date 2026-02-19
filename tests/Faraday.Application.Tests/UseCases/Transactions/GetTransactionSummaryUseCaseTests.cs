@@ -25,10 +25,10 @@ public class GetTransactionSummaryUseCaseTests {
         Guid accountId = Guid.NewGuid();
 
         List<Transaction> transactions = [
-            new(DateTime.UtcNow, 1000m, "Salary", accountId), // Income
-            new(DateTime.UtcNow, 500m, "Bonus", accountId), // Income
-            new(DateTime.UtcNow, -200m, "Groceries", accountId), // Expense
-            new(DateTime.UtcNow, -150m, "Gas", accountId)
+            new(DateTime.UtcNow, 1000m, "Salary", 0, accountId), // Income
+            new(DateTime.UtcNow, 500m, "Bonus", 0, accountId), // Income
+            new(DateTime.UtcNow, -200m, "Groceries", 0, accountId), // Expense
+            new(DateTime.UtcNow, -150m, "Gas", 0, accountId)
         ];
 
         _mockTransactionRepository
@@ -51,8 +51,8 @@ public class GetTransactionSummaryUseCaseTests {
         DateRange dateRange = DateRange.ForMonth(2024, 1);
         Guid accountId = Guid.NewGuid();
 
-        Transaction activeTransaction = new(DateTime.UtcNow, 1000m, "Active", accountId);
-        Transaction voidedTransaction = new(DateTime.UtcNow, 500m, "Voided", accountId);
+        Transaction activeTransaction = new(DateTime.UtcNow, 1000m, "Active", 0, accountId);
+        Transaction voidedTransaction = new(DateTime.UtcNow, 500m, "Voided", 0, accountId);
         voidedTransaction.Void();
 
         List<Transaction> transactions = [

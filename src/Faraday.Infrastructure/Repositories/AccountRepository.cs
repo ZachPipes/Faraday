@@ -21,6 +21,11 @@ public class AccountRepository : IAccountRepository {
         return await _context.Accounts
             .FirstOrDefaultAsync(a => a.Id == id);
     }
+    
+    public async Task<Account?> GetByNameAsync(string name) {
+        return await _context.Accounts
+            .FirstOrDefaultAsync(a => a.Name == name);
+    }
 
     public async Task<IEnumerable<Account>> GetAllActiveAsync() {
         return await _context.Accounts

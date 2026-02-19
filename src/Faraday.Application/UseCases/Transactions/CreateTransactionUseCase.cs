@@ -50,6 +50,7 @@ public class CreateTransactionUseCase {
             request.Date,
             request.Amount,
             request.Description,
+            request.No,
             request.AccountId);
 
         // Validate transaction belongs to account (domain logic)

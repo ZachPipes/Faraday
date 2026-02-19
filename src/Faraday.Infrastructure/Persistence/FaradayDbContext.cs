@@ -1,5 +1,6 @@
 ﻿// src/Faraday.Infrastructure/Persistence/FaradayDbContext.cs
 
+using Faraday.Application.Interfaces;
 using Faraday.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
