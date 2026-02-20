@@ -1,0 +1,45 @@
+﻿<UserControl x:Class="Faraday.UI.Views.DashboardViews.AccountManagementViews.AccountTemplateView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:Faraday.UI.Views.DashboardViews.AccountManagementViews"
+             xmlns:scottplot="http://schemas.scottplot.net/2008/xaml/presentation"
+             mc:Ignorable="d"
+             d:DesignHeight="300" d:DesignWidth="300">
+    
+    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Toolbar -->
+        <Grid Grid.Row="0" Background="#4D4D4D" Height="50" VerticalAlignment="Top">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" /> <!-- (0)Add_Transactions-->
+                <ColumnDefinition Width="Auto" /> <!-- (1)Investing -->
+                <ColumnDefinition Width="Auto" /> <!-- (2)Debt -->
+                <ColumnDefinition Width="Auto" /> <!-- (3)Assets -->
+                <ColumnDefinition Width="Auto" />  <!-- (4)Tools -->
+                <ColumnDefinition Width="*" />    <!-- (5)Spacer -->
+                <ColumnDefinition Width="Auto" /> <!-- (6)Settings -->
+            </Grid.ColumnDefinitions>
+
+            <!-- Dashboard Button -->
+            <Button Grid.Column="0"
+                    Style="{StaticResource AccountNavbarButtonStyle}"
+                    Content="Add Transactions"
+                    Command="{Binding AccountNavbarSelectionCommand}"
+                    CommandParameter="Add_Transactions" />
+        </Grid>
+
+        <!-- Graph -->
+        <scottplot:WpfPlot Grid.Row="1" Name="AccountGraph" />
+
+        <!-- Data Grid -->
+        <DataGrid Grid.Row="2" x:Name="AccountDataGrid" ItemsSource="{Binding DisplayTransactions}"
+                  HorizontalAlignment="Stretch" HeadersVisibility="Column"/>
+    </Grid>
+</UserControl>

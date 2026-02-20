@@ -41,7 +41,7 @@ public class Account : BaseEntity {
         Type = type;
         Currency = currency;
         OpeningBalance = openingBalance;
-        Institution =  institution;
+        Institution = institution;
     }
 
 
@@ -71,6 +71,19 @@ public class Account : BaseEntity {
 
         return CurrentBalance;
     }
+
+    public IEnumerable<(Transaction Transaction, decimal RunningBalance)> GetTransactionRunningBalances(
+        IEnumerable<Transaction> transactions) {
+        decimal runningBalance = OpeningBalance;
+
+        foreach (Transaction t in transactions.OrderBy(t => t.Date)) {
+            if (!t.IsVoid)
+                runningBalance += t.Amount;
+
+            yield return (t, runningBalance);
+        }
+    }
+
 
     /// <summary>
     /// Update the account name

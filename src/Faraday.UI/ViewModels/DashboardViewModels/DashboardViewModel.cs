@@ -96,9 +96,10 @@ public partial class DashboardViewModel : ViewModelBase, INavigationAware {
     /// <summary>
     /// Switches CurrentAccount from whatever to the account (name) that has been passed
     /// </summary>
-    /// <param name="account">The name of the account to switch to.</param>
+    /// <param name="accountName">The name of the account to switch to.</param>
     [RelayCommand]
-    private void SwitchCurrentAccount(Account account) {
+    private void SwitchCurrentAccount(string accountName) {
+        Account account = _accountRepository.GetByNameAsync(accountName).Result ?? throw new InvalidOperationException("GetByNameAsync: Account not found");
         CurrentAccount = account;
 
         NavigationParameters parameters = new() {

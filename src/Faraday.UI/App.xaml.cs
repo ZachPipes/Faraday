@@ -67,6 +67,7 @@ public partial class App : PrismApplication {
         // Dashboard Views
         containerRegistry.RegisterForNavigation<DashboardView, DashboardViewModel>();
         containerRegistry.RegisterForNavigation<WidgetView, WidgetViewModel>();
+        containerRegistry.RegisterForNavigation<AccountTemplateView, AccountTemplateViewModel>();
         containerRegistry.RegisterDialog<AddAccountView, AddAccountViewModel>();
 
         // Settings Views

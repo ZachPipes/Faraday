@@ -32,7 +32,7 @@
                             <DataTemplate>
                                 <Button Margin="10" HorizontalAlignment="Stretch"
                                         Command="{Binding DataContext.SwitchCurrentAccountCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                        CommandParameter="{Binding }">
+                                        CommandParameter="{Binding Name}">
                                     <TextBlock>
                                         <Run Text="{Binding Name}" />
                                         <Run Text=" | $" />
