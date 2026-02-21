@@ -40,6 +40,7 @@ public partial class AddAccountViewModel : ViewModelBase, IDialogAware {
     [ObservableProperty] private ObservableCollection<object> _csvData = [];
     [ObservableProperty] private ObservableCollection<string> _previewColumns = [];
 
+    
     // ============== //
     // Dialog Options //
     // ============== //

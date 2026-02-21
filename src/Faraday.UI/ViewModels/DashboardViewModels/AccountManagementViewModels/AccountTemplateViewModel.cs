@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.IO;
 using CommunityToolkit.Mvvm.Input;
 using Faraday.Application.Interfaces;
 using Faraday.Domain.Entities;
@@ -13,15 +14,16 @@ public partial class AccountTemplateViewModel : ViewModelBase, INavigationAware 
     private readonly IWindowService _windowService;
     private readonly ITransactionRepository _transactionRepository;
     private readonly IAccountRepository _accountRepository;
+    private readonly ICSVService _csvService;
 
 
     // ========= //
     // Variables //
     // ========= //
     private Guid _accountId;
-    public ObservableCollection<Transaction> AccountTransactions { get; set; } = [];
     public ObservableCollection<TransactionDisplay> DisplayTransactions { get; set; } = [];
-    private string? _csvFilePath;
+    private string? CSVFilePath;
+    private ObservableCollection<object> _csvData = [];
     
     
     // ====== //
@@ -33,11 +35,12 @@ public partial class AccountTemplateViewModel : ViewModelBase, INavigationAware 
     // =========== //
     // Constructor //
     // =========== //
-    public AccountTemplateViewModel(IWindowService windowService, ITransactionRepository transactionRepository, IAccountRepository accountRepository) {
+    public AccountTemplateViewModel(IWindowService windowService, ITransactionRepository transactionRepository, IAccountRepository accountRepository, ICSVService csvService) {
         // Dependency Injection
         _windowService = windowService;
         _transactionRepository = transactionRepository;
         _accountRepository = accountRepository;
+        _csvService = csvService;
     }
 
 
@@ -86,7 +89,6 @@ public partial class AccountTemplateViewModel : ViewModelBase, INavigationAware 
         }
         
         TransactionsLoaded?.Invoke();
-        Console.WriteLine($"Loaded transactions from vm");
     }
 
 
@@ -98,12 +100,25 @@ public partial class AccountTemplateViewModel : ViewModelBase, INavigationAware 
     /// </summary>
     /// <param name="command">A textual form of the command passed by the frontend.</param>
     [RelayCommand]
-    private void AccountNavbarSelection(string command) {
+    private async Task AccountNavbarSelection(string command) {
         switch (command) {
             case "Add_Transactions":
-                _csvFilePath = _windowService.ShowFilePicker();
-                if (string.IsNullOrEmpty(_csvFilePath))
-                    return;
+                CSVFilePath = _windowService.ShowFilePicker();
+                if (string.IsNullOrEmpty(CSVFilePath)) return;
+
+                _csvData.Clear();
+                string[] lines = await File.ReadAllLinesAsync(CSVFilePath);
+
+                foreach (string line in lines.Skip(1)) {
+                    List<string> columns = line.Split(',').Select(c => c.Trim('"')).ToList();
+                    _csvData.Add(columns);
+                }
+                
+                IEnumerable<Transaction> temp = _csvService.Parse<Transaction>(CSVFilePath, _accountId);
+                foreach (Transaction transaction in temp) {
+                    await _transactionRepository.CreateAsync(transaction);
+                }
+                
                 break;
             default:
                 Console.WriteLine($"AccountTemplateViewModel::AccountNavbarSelection: Unknown command: {command}");

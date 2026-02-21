@@ -33,7 +33,6 @@ public partial class AccountTemplateView : UserControl {
     /// </summary>
     /// <param name="transactions">The transactions to display</param>
     private void PlotBalances(IEnumerable<TransactionDisplay> transactions) {
-        Console.WriteLine($"PlotBalances called with {transactions.Count()} transactions");
         AccountGraph.Plot.Clear();
 
         IEnumerable<TransactionDisplay> transactionDisplays =
