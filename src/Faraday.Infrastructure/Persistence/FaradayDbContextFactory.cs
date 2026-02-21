@@ -1,6 +1,5 @@
 ﻿// src/Faraday.Infrastructure/Persistence/FaradayDbContextFactory.cs
 
-using Faraday.Application.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
@@ -13,7 +12,12 @@ public class FaradayDbContextFactory : IDesignTimeDbContextFactory<FaradayDbCont
     public FaradayDbContext CreateDbContext(string[] args) {
         DbContextOptionsBuilder<FaradayDbContext> optionsBuilder = new();
         
-        optionsBuilder.UseSqlite("DataContext=faraday.sqlite");
+        string localFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+        const string faradayFolderName = "Faraday";
+        string faradayFolder = Path.Combine(localFolder, faradayFolderName);
+        string dbPath = Path.Combine(faradayFolder, "faraday.sqlite");
+        
+        optionsBuilder.UseSqlite($"Data Source={dbPath}");
 
         return new FaradayDbContext(optionsBuilder.Options);
     }

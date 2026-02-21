@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿// src/Faraday.UI/Services/AppState.cs
+
+using System.IO;
 using System.Text.Json;
 using Faraday.Application.Interfaces;
 using Faraday.Domain.Entities;

@@ -16,6 +16,7 @@ public class FaradayDbContext : DbContext {
     // DbSets (tables)
     public DbSet<Account> Accounts => Set<Account>();
     public DbSet<Transaction> Transactions => Set<Transaction>();
+    public DbSet<Stock> Stocks => Set<Stock>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) {
         base.OnModelCreating(modelBuilder);
