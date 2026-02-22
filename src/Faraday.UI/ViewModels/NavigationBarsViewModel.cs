@@ -33,6 +33,10 @@ public partial class NavigationBarsViewModel : ViewModelBase {
             case "Dashboard":
                 _regionManager.RequestNavigate("MainRegion", "DashboardView");
                 break;
+            
+            case "Settings":
+                _regionManager.RequestNavigate("MainRegion", "SettingsView");
+                break;
 
             default:
                 throw new InvalidOperationException(

@@ -9,9 +9,11 @@ using Faraday.UI.Services;
 using Faraday.UI.ViewModels;
 using Faraday.UI.ViewModels.DashboardViewModels;
 using Faraday.UI.ViewModels.DashboardViewModels.AccountManagementViewModels;
+using Faraday.UI.ViewModels.SettingsViewModels;
 using Faraday.UI.Views;
 using Faraday.UI.Views.DashboardViews;
 using Faraday.UI.Views.DashboardViews.AccountManagementViews;
+using Faraday.UI.Views.SettingsViews;
 using Microsoft.EntityFrameworkCore;
 
 namespace Faraday.UI;
@@ -72,6 +74,7 @@ public partial class App : PrismApplication {
         containerRegistry.RegisterDialog<AddAccountView, AddAccountViewModel>();
 
         // Settings Views
+        containerRegistry.RegisterForNavigation<SettingsView, SettingsViewModel>();
     }
 
     /// <summary>

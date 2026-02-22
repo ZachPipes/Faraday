@@ -42,11 +42,11 @@
         <!--         Grid.Column="4" Flyout="{StaticResource ToolsFlyout}"/> -->
         <!-- -->
         <!-- ~1~ Settings Button @1@ -->
-        <!-- <Button x:Name="SettingsButton" Classes="Navbar" Grid.Column="6" -->
-        <!--         Command="{Binding NavbarSelectionCommand}" CommandParameter="Settings"> -->
-        <!--     <Button.Content> -->
-        <!--         <Image Source="../Assets/Temporary_Settings_Icon.png" /> -->
-        <!--     </Button.Content> -->
-        <!-- </Button> -->
+        <Button x:Name="SettingsButton" Grid.Column="6"
+                Style="{StaticResource NavbarButtonStyle}"
+                Content="Settings"
+                Command="{Binding NavbarSelectionCommand}" 
+                CommandParameter="Settings">
+        </Button>
     </Grid>
 </UserControl>

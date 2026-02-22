@@ -5,7 +5,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Faraday.Application.Interfaces;
 using Faraday.Domain.Entities;
-using Faraday.UI.ViewModels.DashboardViewModels.AccountManagementViewModels;
 
 namespace Faraday.UI.ViewModels.DashboardViewModels;
 
@@ -17,7 +16,6 @@ public partial class DashboardViewModel : ViewModelBase, INavigationAware {
     private readonly IDialogService _dialogService;
     private readonly IAccountRepository _accountRepository;
     private readonly ITransactionRepository _transactionRepository;
-    private readonly IWindowService _windowService;
 
 
     // ========= //
@@ -30,14 +28,14 @@ public partial class DashboardViewModel : ViewModelBase, INavigationAware {
     // =========== //
     // Constructor //
     // =========== //
-    public DashboardViewModel(IRegionManager regionManager, IDialogService dialogService, IAccountRepository accountRepository,
-        ITransactionRepository transactionRepository, IWindowService windowService) {
+    public DashboardViewModel(IRegionManager regionManager, IDialogService dialogService,
+        IAccountRepository accountRepository,
+        ITransactionRepository transactionRepository) {
         // Injecting Dependencies
         _regionManager = regionManager;
         _dialogService = dialogService;
         _accountRepository = accountRepository;
         _transactionRepository = transactionRepository;
-        _windowService = windowService;
 
         // Load Accounts to Dashboard button list
         _ = LoadAccounts();
@@ -58,6 +56,8 @@ public partial class DashboardViewModel : ViewModelBase, INavigationAware {
         // Iterates through each member of the accounts in the database and calculates the balance of them,
         // then adds them to the ActiveAccounts variable
         foreach (Account account in await _accountRepository.GetAllActiveAsync()) {
+            if (!account.IsActive) continue;
+
             // Calculate balances for this account
             _ = account.CalculateCurrentBalance(await _transactionRepository.GetByAccountIdAsync(account.Id));
 
@@ -99,7 +99,8 @@ public partial class DashboardViewModel : ViewModelBase, INavigationAware {
     /// <param name="accountName">The name of the account to switch to.</param>
     [RelayCommand]
     private void SwitchCurrentAccount(string accountName) {
-        Account account = _accountRepository.GetByNameAsync(accountName).Result ?? throw new InvalidOperationException("GetByNameAsync: Account not found");
+        Account account = _accountRepository.GetByNameAsync(accountName).Result ??
+                          throw new InvalidOperationException("GetByNameAsync: Account not found");
         CurrentAccount = account;
 
         NavigationParameters parameters = new() {
@@ -114,6 +115,10 @@ public partial class DashboardViewModel : ViewModelBase, INavigationAware {
     /// </summary>
     [RelayCommand]
     private void OpenAddAccountView() {
-        _dialogService.ShowDialog("AddAccountView");
+        _dialogService.ShowDialog("AddAccountView", null, result => {
+            if (result.Result == ButtonResult.OK) {
+                _ = LoadAccounts();
+            }
+        });
     }
 }
