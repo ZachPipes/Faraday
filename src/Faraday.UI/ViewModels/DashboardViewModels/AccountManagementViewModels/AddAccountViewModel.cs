@@ -16,6 +16,7 @@ public partial class AddAccountViewModel : ViewModelBase, IDialogAware {
     private readonly IWindowService _windowService;
     private readonly IAccountRepository _accountRepository;
     private readonly ITransactionRepository _transactionRepository;
+    private readonly IStockRepository _stockRepository;
     private readonly ICSVService _csvService;
 
 
@@ -37,6 +38,8 @@ public partial class AddAccountViewModel : ViewModelBase, IDialogAware {
 
     // CSV Data
     private string? CSVFilePath { get; set; }
+    private ObservableCollection<Transaction> transactionData = [];
+    private ObservableCollection<Transaction> stockData = [];
     [ObservableProperty] private ObservableCollection<object> _csvData = [];
     [ObservableProperty] private ObservableCollection<string> _previewColumns = [];
 
@@ -44,6 +47,7 @@ public partial class AddAccountViewModel : ViewModelBase, IDialogAware {
     // ============== //
     // Dialog Options //
     // ============== //
+    // This is used for the window title (Prism handles it)
     public static string Title => "Add New Account";
 
     
@@ -51,11 +55,12 @@ public partial class AddAccountViewModel : ViewModelBase, IDialogAware {
     // Constructor //
     // =========== //
     public AddAccountViewModel(IWindowService windowService, IAccountRepository accountRepository,
-        ITransactionRepository transactionRepository, ICSVService csvService) {
+        ITransactionRepository transactionRepository, IStockRepository stockRepository, ICSVService csvService) {
         // Dependency Injection //
         _windowService = windowService;
         _accountRepository = accountRepository;
         _transactionRepository = transactionRepository;
+        _stockRepository = stockRepository;
         _csvService = csvService;
 
         // Variables //
@@ -97,8 +102,6 @@ public partial class AddAccountViewModel : ViewModelBase, IDialogAware {
 
             CsvData.Add(new ObservableCollection<string>(columns));
         }
-
-        // TODO DISPLAY ONLY, DO NOT MAKE ANY TRANSACTION OBJECTS
     }
 
     /// <summary>
@@ -133,28 +136,36 @@ public partial class AddAccountViewModel : ViewModelBase, IDialogAware {
         if (CSVFilePath == null) return;
         switch (SelectedInstitution) {
             case InstitutionType.Commerce:
-                IEnumerable<Transaction> temp = _csvService.Parse<Transaction>(CSVFilePath, accountId);
-                CsvData = new ObservableCollection<object>(temp);
+                IEnumerable<Transaction> commerceData = _csvService.Parse<Transaction>(CSVFilePath, accountId);
+                IEnumerable<Transaction> transactions = commerceData as Transaction[] ?? commerceData.ToArray();
+                CsvData = new ObservableCollection<object>(transactions);
+                foreach (Transaction transaction in transactions) {
+                    await _transactionRepository.CreateAsync(transaction);
+                }
+                
                 break;
             case InstitutionType.Simmons:
-                //TODO - Implement Simmons CSV reading
+                // TODO - Implement Simmons CSV reading
+                // IEnumerable<Transaction> simmonsData = _csvService.Parse<Transaction>(CSVFilePath, accountId);
+                // CsvData = new ObservableCollection<object>(simmonsData);
                 Console.WriteLine("Simmons CSV reading not implemented");
                 break;
             case InstitutionType.Fidelity:
-                //TODO - Implement Fidelity CSV reading
-                Console.WriteLine("Fidelity CSV reading not implemented");
+                IEnumerable<Stock> fidelityData = _csvService.Parse<Stock>(CSVFilePath, accountId);
+                IEnumerable<Stock> stocks = fidelityData as Stock[] ?? fidelityData.ToArray();
+                CsvData = new ObservableCollection<object>(stocks);
+                
+                foreach (Stock stock in stocks) {
+                    await _stockRepository.CreateAsync(stock);
+                }
+                
                 break;
             case InstitutionType.Cash:
             default:
                 throw new ArgumentOutOfRangeException(
                     $"Institution passed is not an implemented type: Instituion {SelectedInstitution}");
         }
-
-        // Uploading transactions to the database
-        foreach (Transaction transaction in CsvData) {
-            await _transactionRepository.CreateAsync(transaction);
-        }
-
+        
         // Closing the window
         DialogResult result = new(ButtonResult.OK);
         RequestClose.Invoke(result);

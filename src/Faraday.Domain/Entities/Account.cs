@@ -83,6 +83,18 @@ public class Account : BaseEntity {
             yield return (t, runningBalance);
         }
     }
+    
+    public IEnumerable<(Stock Transaction, decimal RunningBalance)> GetStockRunningBalances(
+        IEnumerable<Stock> transactions) {
+        decimal runningBalance = OpeningBalance;
+
+        foreach (Stock t in transactions.OrderBy(t => t.RunDate)) {
+            if (!t.IsVoid)
+                runningBalance += t.Amount;
+
+            yield return (t, runningBalance);
+        }
+    }
 
 
     /// <summary>

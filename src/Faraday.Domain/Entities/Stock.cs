@@ -27,7 +27,7 @@ public class Stock : BaseEntity {
     public decimal AccruedInterest { get; set; }
     public decimal Amount { get; set; }
     public decimal CashBalance { get; set; }
-    public DateTime SettlementDate { get; set; }
+    public DateTime? SettlementDate { get; set; }
     public Guid AccountId { get; set; }
     
     public bool IsVoid { get; private set; }
@@ -38,7 +38,7 @@ public class Stock : BaseEntity {
     // ================== //
     public Stock(DateTime runDate, string action, string symbol, string description, string type,
         decimal price, decimal quantity, decimal commission, decimal fees, decimal accruedInterest, 
-        decimal amount, decimal cashBalance, DateTime settlementDate, Guid accountId) {
+        decimal amount, decimal cashBalance, DateTime? settlementDate, Guid accountId) {
         ValidateCommonFields(runDate, description);
 
         RunDate = runDate;

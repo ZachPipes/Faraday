@@ -39,12 +39,12 @@ public interface IStockRepository {
     /// <summary>
     /// Create a new Stock
     /// </summary>
-    Task<Stock> CreateAsync(Stock Stock);
+    Task<Stock> CreateAsync(Stock stock);
 
     /// <summary>
     /// Update an existing Stock
     /// </summary>
-    Task UpdateAsync(Stock Stock);
+    Task UpdateAsync(Stock stock);
 
     /// <summary>
     /// Get total count of Stocks for an account

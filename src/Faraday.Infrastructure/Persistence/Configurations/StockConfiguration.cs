@@ -76,8 +76,7 @@ public class StockConfiguration : IEntityTypeConfiguration<Stock> {
             .IsRequired();
 
         builder.Property(s => s.SettlementDate)
-            .HasColumnName("settlement_date")
-            .IsRequired();
+            .HasColumnName("settlement_date");
 
         builder.Property(s => s.AccountId)
             .HasColumnName("account_id")

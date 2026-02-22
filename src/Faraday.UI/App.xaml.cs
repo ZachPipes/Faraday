@@ -55,6 +55,7 @@ public partial class App : PrismApplication {
         // ======== //
         containerRegistry.Register<IAccountRepository, AccountRepository>();
         containerRegistry.Register<ITransactionRepository, TransactionRepository>();
+        containerRegistry.Register<IStockRepository, StockRepository>();
         containerRegistry.Register<IWindowService, WindowService>();
         containerRegistry.Register<ICSVService, CSVService>();
 
