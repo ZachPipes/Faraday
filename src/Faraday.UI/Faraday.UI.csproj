@@ -13,8 +13,8 @@
       </PackageReference>
       <PackageReference Include="Prism.DryIoc" Version="9.0.537" />
       <PackageReference Include="Prism.Wpf" Version="9.0.537" />
-      <PackageReference Include="ScottPlot" Version="5.1.57" />
       <PackageReference Include="ScottPlot.WPF" Version="5.1.57" />
+        <PackageReference Include="SkiaSharp.Views.WPF" Version="3.119.2" NoWarn="NU1701"/>
     </ItemGroup>
 
     <ItemGroup>

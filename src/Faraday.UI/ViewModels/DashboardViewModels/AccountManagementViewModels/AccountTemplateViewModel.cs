@@ -28,7 +28,7 @@ public partial class AccountTemplateViewModel : ViewModelBase, INavigationAware 
     public ObservableCollection<TransactionDisplay> DisplayTransactions { get; set; } = [];
     private string? _csvFilePath;
     private ObservableCollection<object> _csvData = [];
-    private Account _selectedAccount;
+    private Account _selectedAccount = null!;
 
 
     // ====== //
