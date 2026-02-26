@@ -18,6 +18,7 @@ public partial class AccountTemplateViewModel : ViewModelBase, INavigationAware 
     private readonly IAccountRepository _accountRepository;
     private readonly IStockRepository _stockRepository;
     private readonly ICSVService _csvService;
+    private readonly IDialogService _dialogService;
 
 
     // ========= //
@@ -25,9 +26,8 @@ public partial class AccountTemplateViewModel : ViewModelBase, INavigationAware 
     // ========= //
     private Guid _accountId;
 
-    public ObservableCollection<TransactionDisplay> DisplayTransactions { get; set; } = [];
+    public ObservableCollection<TransactionDisplay> DisplayTransactions { get; } = [];
     private string? _csvFilePath;
-    private ObservableCollection<object> _csvData = [];
     private Account _selectedAccount = null!;
 
 
@@ -41,13 +41,14 @@ public partial class AccountTemplateViewModel : ViewModelBase, INavigationAware 
     // Constructor //
     // =========== //
     public AccountTemplateViewModel(IWindowService windowService, ITransactionRepository transactionRepository,
-        IAccountRepository accountRepository, IStockRepository stockRepository, ICSVService csvService) {
+        IAccountRepository accountRepository, IStockRepository stockRepository, ICSVService csvService, IDialogService dialogService) {
         // Dependency Injection
         _windowService = windowService;
         _transactionRepository = transactionRepository;
         _accountRepository = accountRepository;
         _stockRepository = stockRepository;
         _csvService = csvService;
+        _dialogService = dialogService;
     }
 
 
@@ -141,41 +142,44 @@ public partial class AccountTemplateViewModel : ViewModelBase, INavigationAware 
     private async Task AccountNavbarSelection(string command) {
         switch (command) {
             case "Add_Transactions":
-                _csvFilePath = _windowService.ShowFilePicker();
-                if (string.IsNullOrEmpty(_csvFilePath)) return;
-                _csvData.Clear();
-
-                try {
-                    switch (_selectedAccount.Institution) {
-                        case InstitutionType.Commerce:
-                            IEnumerable<Transaction> commerceData =
-                                _csvService.Parse<Transaction>(_csvFilePath, _accountId);
-                            IEnumerable<Transaction> transactions =
-                                commerceData as Transaction[] ?? commerceData.ToArray();
-                            foreach (Transaction transaction in transactions) {
-                                _csvData.Add(transaction);
-                                await _transactionRepository.CreateAsync(transaction);
-                            }
-
-                            break;
-
-                        case InstitutionType.Fidelity:
-                            IEnumerable<Stock> fidelityData = _csvService.Parse<Stock>(_csvFilePath, _accountId);
-                            IEnumerable<Stock> stocks = fidelityData as Stock[] ?? fidelityData.ToArray();
-                            _csvData = new ObservableCollection<object>(stocks);
-                            foreach (Stock stock in stocks) {
-                                _csvData.Add(stock);
-                                await _stockRepository.CreateAsync(stock);
-                            }
-
-                            break;
-
-                        case InstitutionType.Cash:
-                        case InstitutionType.Simmons:
-                        default:
-                            throw new ArgumentOutOfRangeException(
-                                $"Institution passed is not an implemented type: Instituion {_selectedAccount.Institution}");
+                DialogParameters parameters = new() { { "SelectedAccount", _selectedAccount } };
+                _dialogService.ShowDialog("EditAccountView", parameters, result => {
+                    if (result.Result == ButtonResult.OK) {
+                        _ = LoadTransactions();
                     }
+                });
+                
+                // _csvFilePath = _windowService.ShowFilePicker();
+                // if (string.IsNullOrEmpty(_csvFilePath)) return;
+                //
+                try {
+                    //     switch (_selectedAccount.Institution) {
+                    //         case InstitutionType.Commerce:
+                    //             IEnumerable<Transaction> commerceData =
+                    //                 _csvService.Parse<Transaction>(_csvFilePath, _accountId);
+                    //             IEnumerable<Transaction> transactions =
+                    //                 commerceData as Transaction[] ?? commerceData.ToArray();
+                    //             foreach (Transaction transaction in transactions) {
+                    //                 await _transactionRepository.CreateAsync(transaction);
+                    //             }
+                    //
+                    //             break;
+                    //
+                    //         case InstitutionType.Fidelity:
+                    //             IEnumerable<Stock> fidelityData = _csvService.Parse<Stock>(_csvFilePath, _accountId);
+                    //             IEnumerable<Stock> stocks = fidelityData as Stock[] ?? fidelityData.ToArray();
+                    //             foreach (Stock stock in stocks) {
+                    //                 await _stockRepository.CreateAsync(stock);
+                    //             }
+                    //
+                    //             break;
+                    //
+                    //         case InstitutionType.Cash:
+                    //         case InstitutionType.Simmons:
+                    //         default:
+                    //             throw new ArgumentOutOfRangeException(
+                    //                 $"Institution passed is not an implemented type: Instituion {_selectedAccount.Institution}");
+                    // }
                     
                     _ = LoadTransactions();
                 }

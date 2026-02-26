@@ -41,6 +41,15 @@ public class WindowService : IWindowService {
         window.Show();
     }
 
+    public void ShowMessage(string message, string caption = "Notification"){
+        // Standard WPF MessageBox
+        MessageBox.Show(
+            message, 
+            caption, 
+            MessageBoxButton.OK, 
+            MessageBoxImage.Information);
+    }
+
     [Obsolete("Should use Prism's IDialogService", true)]
     public bool? ShowDialog<TViewModel>() where TViewModel : class {
         Window window = ResolveWindow<TViewModel>();

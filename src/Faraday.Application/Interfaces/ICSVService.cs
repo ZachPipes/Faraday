@@ -11,5 +11,5 @@ public interface ICSVService {
     /// <param name="filePath">The path to the CSV file.</param>
     /// <param name="accountId">The account id to link</param>
     /// <returns>An enumerable of parsed records.</returns>
-    IEnumerable<T> Parse<T>(string filePath, Guid accountId) where T : class;
+    IAsyncEnumerable<T> Parse<T>(string filePath, Guid accountId) where T : class;
 }

@@ -9,7 +9,7 @@ using Faraday.UI.Services;
 
 namespace Faraday.UI.ViewModels.DashboardViewModels.AccountManagementViewModels;
 
-public partial class AddAccountViewModel : ViewModelBase, IDialogAware {
+public partial class EditAccountViewModel : ViewModelBase, IDialogAware {
     // ============ //
     // Dependencies //
     // ============ //
@@ -24,7 +24,7 @@ public partial class AddAccountViewModel : ViewModelBase, IDialogAware {
     // Variables //
     // ========= //
     [ObservableProperty] private BalanceInputMode _selectedMode = BalanceInputMode.CSV;
-    [ObservableProperty] private Account? _newAccount;
+    [ObservableProperty] private Account? _editAccount;
     [ObservableProperty] private decimal _endingBalance;
     [ObservableProperty] private ObservableCollection<string> _currencyOptions;
     [ObservableProperty] private ObservableCollection<string> _institutionOptions;
@@ -32,27 +32,20 @@ public partial class AddAccountViewModel : ViewModelBase, IDialogAware {
 
     [ObservableProperty] private string _enteredName;
     [ObservableProperty] private DateTime _selectedDate = DateTime.Today;
-    [ObservableProperty] private CurrencyType _selectedCurrency;
-    [ObservableProperty] private InstitutionType _selectedInstitution;
-    [ObservableProperty] private AccountType _selectedAccountType;
+    [ObservableProperty] private string _selectedCurrency;
+    [ObservableProperty] private string _selectedInstitution;
+    [ObservableProperty] private string _selectedAccountType;
 
     // CSV Data
     private string? CSVFilePath { get; set; }
     [ObservableProperty] private ObservableCollection<object> _csvData = [];
     [ObservableProperty] private ObservableCollection<string> _previewColumns = [];
 
-    
-    // ============== //
-    // Dialog Options //
-    // ============== //
-    // This is used for the window title (Prism handles it)
-    public static string Title => "Add New Account";
 
-    
     // =========== //
     // Constructor //
     // =========== //
-    public AddAccountViewModel(IWindowService windowService, IAccountRepository accountRepository,
+    public EditAccountViewModel(IWindowService windowService, IAccountRepository accountRepository,
         ITransactionRepository transactionRepository, IStockRepository stockRepository, ICSVService csvService) {
         // Dependency Injection //
         _windowService = windowService;
@@ -62,21 +55,67 @@ public partial class AddAccountViewModel : ViewModelBase, IDialogAware {
         _csvService = csvService;
 
         // Variables //
-        _currencyOptions = new ObservableCollection<string>(AppState.Instance.Settings.Currencies);
-        _institutionOptions = new ObservableCollection<string>(AppState.Instance.Settings.Institutions);
-        _typeOptions = new ObservableCollection<string>(AppState.Instance.Settings.AccountTypes);
-        _enteredName = "";
+        CurrencyOptions = new ObservableCollection<string>(AppState.Instance.Settings.Currencies);
+        InstitutionOptions = new ObservableCollection<string>(AppState.Instance.Settings.Institutions);
+        TypeOptions = new ObservableCollection<string>(AppState.Instance.Settings.AccountTypes);
+        EnteredName = "";
     }
-    
-    
+
+
     // ============ //
     // IDialogAware //
     // ============ //
     public bool CanCloseDialog() => true;
     public void OnDialogClosed() { }
-    public void OnDialogOpened(IDialogParameters parameters) { }
+
+    public void OnDialogOpened(IDialogParameters parameters) {
+        try {
+            Account account = parameters.GetValue<Account>("SelectedAccount")
+                              ?? throw new ArgumentNullException(nameof(parameters),
+                                  "SelectedAccount was not passed to the dialog.");
+
+            EditAccount = account;
+            EnteredName = account.Name;
+            SelectedCurrency = CurrencyOptions.FirstOrDefault(x => 
+                string.Equals(x, account.Currency.ToString(), StringComparison.OrdinalIgnoreCase)) ?? throw new InvalidOperationException();
+            SelectedInstitution = InstitutionOptions.FirstOrDefault(x => 
+                string.Equals(x, account.Institution.ToString(), StringComparison.OrdinalIgnoreCase)) ?? throw new InvalidOperationException();
+            SelectedAccountType = TypeOptions.FirstOrDefault(x => 
+                string.Equals(x, account.Type.ToString(), StringComparison.OrdinalIgnoreCase)) ?? throw new InvalidOperationException();
+            
+            // Start the async data loading without making this method 'async void'
+            _ = LoadInitialDataAsync(account);
+        }
+        catch (Exception e) {
+            _windowService.ShowMessage($"Error initializing dialog: {e.Message}");
+        }
+    }
+
+    private async Task LoadInitialDataAsync(Account account) {
+        try {
+            if (SelectedInstitution == nameof(InstitutionType.Fidelity)) {
+                IEnumerable<Stock> stocks = await _stockRepository.GetByAccountIdAsync(account.Id);
+                CsvData = new ObservableCollection<object>(stocks);
+            }
+            else {
+                IEnumerable<Transaction> txs = await _transactionRepository.GetByAccountIdAsync(account.Id);
+                CsvData = new ObservableCollection<object>(txs);
+            }
+        }
+        catch (Exception e) {
+            _windowService.ShowMessage($"Error loading account data: {e.Message}");
+        }
+    }
+
     public DialogCloseListener RequestClose { get; private set; } = new();
-    
+
+
+    // ============== //
+    // Dialog Options //
+    // ============== //
+    // This is used for the window title (Prism handles it)
+    public static string Title => "Edit Account";
+
 
     // ======== //
     // Commands //
@@ -85,14 +124,14 @@ public partial class AddAccountViewModel : ViewModelBase, IDialogAware {
     /// Starts the process of uploading a CSV file to the program.
     /// </summary>
     [RelayCommand]
-    private void UploadCSVFile() {
+    private async Task UploadCSVFile() {
         // Allows user to select a CSV file and checks if it is empty
         CSVFilePath = _windowService.ShowFilePicker();
         if (string.IsNullOrEmpty(CSVFilePath)) return;
 
         CsvData.Clear();
         // Basic CSV Parsing ___FOR DISPLAY ONLY___
-        string[] lines = File.ReadAllLines(CSVFilePath);
+        string[] lines = await File.ReadAllLinesAsync(CSVFilePath);
 
         // Skip header if needed
         foreach (string line in lines.Skip(1)) {
@@ -108,58 +147,60 @@ public partial class AddAccountViewModel : ViewModelBase, IDialogAware {
     /// <param name="parameter">The finish button's parent window</param>
     [RelayCommand]
     private async Task? FinishButton(object parameter) {
-        NewAccount = new Account(
-            EnteredName, SelectedAccountType, EndingBalance, SelectedCurrency, SelectedInstitution);
-
-        if (NewAccount.Name == "") {
-            Console.WriteLine("AddAccountViewModel::FinishButton() - New Account Name is empty!");
+        if (EnteredName == "") {
+            Console.WriteLine("EditAccountViewModel::FinishButton() - New Account Name is empty!");
             return;
         }
 
-        if (await _accountRepository.ExistsWithNameAsync(NewAccount.Name)) {
-            Console.WriteLine("Account already exists! Returning...");
+        Guid accountIdWithName = Guid.Empty;
+        if (await _accountRepository.ExistsWithNameAsync(EnteredName)) {
+            accountIdWithName = (await _accountRepository.GetByNameAsync(EnteredName)).Id;
+        }
+        
+        if (await _accountRepository.ExistsWithNameAsync(EnteredName) && EditAccount.Id != accountIdWithName ) {
+            Console.WriteLine("Account with that name already exists! Returning...");
             return;
         }
 
         // Creates the new account in the Accounts table
-        await _accountRepository.CreateAsync(NewAccount);
-
+        await _accountRepository.UpdateAsync(EditAccount ?? throw new InvalidOperationException());
+        
         // Getting account from Accounts table
-        Account? account = await _accountRepository.GetByNameAsync(NewAccount.Name);
+        Account? account = await _accountRepository.GetByIdAsync(EditAccount.Id);
         if (account == null)
-            throw new InvalidOperationException($"Account '{NewAccount.Name}' not found");
+            throw new InvalidOperationException($"Account '{EditAccount.Name}' not found");
         Guid accountId = account.Id;
 
         // Each case takes in the data and sets CsvData to the data
         if (CSVFilePath == null) return;
         switch (SelectedInstitution) {
-            case InstitutionType.Commerce:
+            case nameof(InstitutionType.Commerce):
                 IAsyncEnumerable<Transaction> commerceData = _csvService.Parse<Transaction>(CSVFilePath, accountId);
                 await foreach (Transaction transaction in commerceData) {
                     await _transactionRepository.CreateAsync(transaction);
                 }
-                
+
                 break;
-            case InstitutionType.Simmons:
+            case nameof(InstitutionType.Simmons):
                 // TODO - Implement Simmons CSV reading
                 // IEnumerable<Transaction> simmonsData = _csvService.Parse<Transaction>(CSVFilePath, accountId);
                 // CsvData = new ObservableCollection<object>(simmonsData);
                 Console.WriteLine("Simmons CSV reading not implemented");
                 break;
-            case InstitutionType.Fidelity:
+            case nameof(InstitutionType.Fidelity):
                 IAsyncEnumerable<Stock> fidelityData = _csvService.Parse<Stock>(CSVFilePath, accountId);
-                
+
                 await foreach (Stock stock in fidelityData) {
                     await _stockRepository.CreateAsync(stock);
                 }
-                
+
                 break;
-            case InstitutionType.Cash:
+            case nameof(InstitutionType.Cash):
             default:
                 throw new ArgumentOutOfRangeException(
                     $"Institution passed is not an implemented type: Instituion {SelectedInstitution}");
         }
-        
+
         // Closing the window
         DialogResult result = new(ButtonResult.OK);
         RequestClose.Invoke(result);

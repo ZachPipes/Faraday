@@ -15,6 +15,11 @@ public interface IWindowService {
     /// </summary>
     /// <typeparam name="TViewModel">The type of the ViewModel to display in the window.</typeparam>
     void Show<TViewModel>() where TViewModel : class;
+    
+    /// <summary>
+    /// Opens a window to display a message.
+    /// </summary>
+    void ShowMessage(string message, string caption = "Notification");
 
     /// <summary>
     /// Opens a window associated with the specified ViewModel type

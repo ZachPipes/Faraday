@@ -5,12 +5,11 @@ using Faraday.Domain.Entities;
 namespace Faraday.UI.Services;
 
 public class CSVService : ICSVService {
-    public IEnumerable<T> Parse<T>(string filePath, Guid accountId) where T : class {
+    public async IAsyncEnumerable<T> Parse<T>(string filePath, Guid accountId) where T : class {
         if (!File.Exists(filePath))
             throw new FileNotFoundException($"CSV file not found: {filePath}");
 
-        IEnumerable<string> lines = File.ReadAllLines(filePath)
-            .Where(line => !string.IsNullOrWhiteSpace(line));
+        IEnumerable<string> lines = (await File.ReadAllLinesAsync(filePath)).Where(line => !string.IsNullOrWhiteSpace(line));
 
         bool started = false;
         foreach (string line in lines) {
