@@ -71,9 +71,32 @@ public class Account : BaseEntity {
 
         return CurrentBalance;
     }
+    
+    /// <summary>
+    /// Calculates the current balance of all stocks
+    /// </summary>
+    /// <param name="stocks">All stocks</param>
+    /// <returns>The sum of all stocks passed</returns>
+    public decimal CalculateCurrentBalance(IEnumerable<Stock> stocks) {
+        ArgumentNullException.ThrowIfNull(stocks);
 
-    public IEnumerable<(Transaction Transaction, decimal RunningBalance)> GetTransactionRunningBalances(
-        IEnumerable<Transaction> transactions) {
+        // Convert to list to reduce db calls
+        List<Stock> stocksList = stocks.ToList();
+
+        List<Stock> invalidTransactions = stocksList.Where(t => t.AccountId != Id).ToList();
+        if (invalidTransactions.Count != 0)
+            throw new InvalidAccountOperationException(
+                Id,
+                $"Found {invalidTransactions.Count} transactions not belonging to this account");
+
+        decimal stockSum = stocksList.Where(t => !t.IsVoid).Sum(t => t.Amount);
+
+        CurrentBalance = OpeningBalance + stockSum;
+
+        return CurrentBalance;
+    }
+
+    public IEnumerable<(Transaction transaction, decimal RunningBalance)> GetRunningBalances(IEnumerable<Transaction> transactions) {
         decimal runningBalance = OpeningBalance;
 
         foreach (Transaction t in transactions.OrderBy(t => t.Date)) {
@@ -84,11 +107,10 @@ public class Account : BaseEntity {
         }
     }
     
-    public IEnumerable<(Stock Transaction, decimal RunningBalance)> GetStockRunningBalances(
-        IEnumerable<Stock> transactions) {
+    public IEnumerable<(Stock stock, decimal RunningBalance)> GetRunningBalances(IEnumerable<Stock> stocks) {
         decimal runningBalance = OpeningBalance;
 
-        foreach (Stock t in transactions.OrderBy(t => t.RunDate)) {
+        foreach (Stock t in stocks.OrderBy(t => t.RunDate)) {
             if (!t.IsVoid)
                 runningBalance += t.Amount;
 

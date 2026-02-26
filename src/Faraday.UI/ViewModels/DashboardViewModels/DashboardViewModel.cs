@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Faraday.Application.Interfaces;
 using Faraday.Domain.Entities;
+using Faraday.Domain.Enums;
 
 namespace Faraday.UI.ViewModels.DashboardViewModels;
 
@@ -16,6 +17,7 @@ public partial class DashboardViewModel : ViewModelBase, INavigationAware {
     private readonly IDialogService _dialogService;
     private readonly IAccountRepository _accountRepository;
     private readonly ITransactionRepository _transactionRepository;
+    private readonly IStockRepository _stockRepository;
 
 
     // ========= //
@@ -30,12 +32,13 @@ public partial class DashboardViewModel : ViewModelBase, INavigationAware {
     // =========== //
     public DashboardViewModel(IRegionManager regionManager, IDialogService dialogService,
         IAccountRepository accountRepository,
-        ITransactionRepository transactionRepository) {
+        ITransactionRepository transactionRepository, IStockRepository stockRepository) {
         // Injecting Dependencies
         _regionManager = regionManager;
         _dialogService = dialogService;
         _accountRepository = accountRepository;
         _transactionRepository = transactionRepository;
+        _stockRepository = stockRepository;
 
         // Load Accounts to Dashboard button list
         _ = LoadAccounts();
@@ -59,7 +62,13 @@ public partial class DashboardViewModel : ViewModelBase, INavigationAware {
             if (!account.IsActive) continue;
 
             // Calculate balances for this account
-            _ = account.CalculateCurrentBalance(await _transactionRepository.GetByAccountIdAsync(account.Id));
+            if (account.Institution is InstitutionType.Commerce) {
+                _ = account.CalculateCurrentBalance(await _transactionRepository.GetByAccountIdAsync(account.Id));
+            }
+
+            if (account.Institution is InstitutionType.Fidelity) {
+                _ = account.CalculateCurrentBalance(await _stockRepository.GetByAccountIdAsync(account.Id));
+            }
 
             ActiveAccounts.Add(account);
         }

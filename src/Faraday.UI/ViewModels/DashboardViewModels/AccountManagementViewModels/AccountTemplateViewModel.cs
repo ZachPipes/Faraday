@@ -79,28 +79,33 @@ public partial class AccountTemplateViewModel : ViewModelBase, INavigationAware 
     private async Task LoadTransactions() {
         IEnumerable<TransactionDisplay> transactionDisplays;
 
-        if (_selectedAccount.Institution == InstitutionType.Commerce) {
-            transactionDisplays = _selectedAccount.GetTransactionRunningBalances(
-                    await _transactionRepository.GetByAccountIdAsync(_selectedAccount.Id))
-                .Select(rb => new TransactionDisplay {
-                    Date = rb.Transaction.Date,
-                    Amount = rb.Transaction.Amount,
-                    Description = rb.Transaction.Description,
-                    Balance = rb.RunningBalance
-                });
-        }
-        else if (_selectedAccount.Institution == InstitutionType.Fidelity) {
-            transactionDisplays = _selectedAccount.GetStockRunningBalances(
-                    await _stockRepository.GetByAccountIdAsync(_selectedAccount.Id))
-                .Select(rb => new TransactionDisplay {
-                    Date = rb.Transaction.RunDate,
-                    Amount = rb.Transaction.Amount,
-                    Description = rb.Transaction.Description,
-                    Balance = rb.RunningBalance
-                });
-        }
-        else {
-            throw new InvalidAccountOperationException(_selectedAccount.Id, "Invalid account type tried to parse!");
+        switch (_selectedAccount.Institution) {
+            case InstitutionType.Commerce:
+                transactionDisplays = _selectedAccount.GetRunningBalances(
+                        await _transactionRepository.GetByAccountIdAsync(_selectedAccount.Id))
+                    .Select(rb => new TransactionDisplay {
+                        Date = rb.transaction.Date,
+                        Amount = rb.transaction.Amount,
+                        Description = rb.transaction.Description,
+                        Balance = rb.RunningBalance
+                    });
+                break;
+            
+            case InstitutionType.Fidelity:
+                transactionDisplays = _selectedAccount.GetRunningBalances(
+                        await _stockRepository.GetByAccountIdAsync(_selectedAccount.Id))
+                    .Select(rb => new TransactionDisplay {
+                        Date = rb.stock.RunDate,
+                        Amount = rb.stock.Amount,
+                        Description = rb.stock.Description,
+                        Balance = rb.RunningBalance
+                    });
+                break;
+            
+            case InstitutionType.Simmons:
+            case InstitutionType.Cash:
+            default:
+                throw new InvalidAccountOperationException(_selectedAccount.Id, "Invalid account type tried to parse!");
         }
 
 
