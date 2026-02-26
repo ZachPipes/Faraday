@@ -1,33 +1,81 @@
-﻿using System.Windows.Controls;
+﻿using System.Windows;
+using System.Windows.Controls;
 using Faraday.UI.Models;
 using Faraday.UI.ViewModels.DashboardViewModels.AccountManagementViewModels;
 
 namespace Faraday.UI.Views.DashboardViews.AccountManagementViews;
 
 public partial class AccountTemplateView : UserControl {
+    // ========= //
+    // Variables //
+    // ========= //
+    private AccountTemplateViewModel? _viewModel;
+    
     // =========== //
     // Constructor //
     // =========== //
     public AccountTemplateView() {
         InitializeComponent();
-        Loaded += (_, _) => {
-            if (DataContext is AccountTemplateViewModel vm) {
-                vm.TransactionsLoaded += () => {
-                    // Update first time
-                    PlotBalances(vm.DisplayTransactions);
-
-                    // Update on collection change
-                    vm.DisplayTransactions.CollectionChanged += (_, _) =>
-                        PlotBalances(vm.DisplayTransactions);
-                };
-            }
-        };
+        
+        Loaded += OnLoaded;
+        Unloaded += OnUnloaded;
     }
 
     
     // ========= //
     // Functions //
     // ========= //
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void OnLoaded(object sender, RoutedEventArgs e) {
+        if (DataContext is not AccountTemplateViewModel vm) return;
+        _viewModel = vm;
+
+        // Subscribe to events
+        _viewModel.TransactionsLoaded += OnTransactionsLoaded;
+        _viewModel.DisplayTransactions.CollectionChanged += OnCollectionChanged;
+
+        // Initial Plot
+        if (_viewModel.DisplayTransactions.Any()) {
+            PlotBalances(_viewModel.DisplayTransactions);
+        }
+    }
+
+    /// <summary>
+    /// Unloads data to prevent memory leaks
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void OnUnloaded(object sender, RoutedEventArgs e) {
+        if (_viewModel == null) return;
+        
+        // Unsubscribe to prevent memory leaks and ghost updates
+        _viewModel.TransactionsLoaded -= OnTransactionsLoaded;
+        _viewModel.DisplayTransactions.CollectionChanged -= OnCollectionChanged;
+        _viewModel = null;
+    }
+    
+    /// <summary>
+    /// Plots balances when the transactions are loaded
+    /// </summary>
+    /// <exception cref="InvalidOperationException">Throws if the transactions are null</exception>
+    private void OnTransactionsLoaded() {
+        if (_viewModel?.DisplayTransactions != null) PlotBalances(_viewModel?.DisplayTransactions ?? throw new InvalidOperationException());
+    }
+
+    /// <summary>
+    /// Plots balances when the collection is changed
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    /// <exception cref="InvalidOperationException">Throws if the transactions are null</exception>
+    private void OnCollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) {
+        if (_viewModel?.DisplayTransactions != null) PlotBalances(_viewModel?.DisplayTransactions ?? throw new InvalidOperationException());
+    }
+
     /// <summary>
     /// Plots the passed transactions on the AccountGraph object in the AccountTemplateView.xaml
     /// </summary>
