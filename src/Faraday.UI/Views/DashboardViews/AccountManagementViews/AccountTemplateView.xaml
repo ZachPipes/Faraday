@@ -3,16 +3,15 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:local="clr-namespace:Faraday.UI.Views.DashboardViews.AccountManagementViews"
              xmlns:scottplot="http://schemas.scottplot.net/2008/xaml/presentation"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" /> <!-- (0)SubNavbar -->
+            <RowDefinition Height="*" /> <!-- (1)Graph -->
+            <RowDefinition Height="*" /> <!-- (2)DataGrid -->
         </Grid.RowDefinitions>
 
         <!-- Toolbar -->
@@ -40,6 +39,24 @@
 
         <!-- Data Grid -->
         <DataGrid Grid.Row="2" x:Name="AccountDataGrid" ItemsSource="{Binding DisplayTransactions}"
-                  HorizontalAlignment="Stretch" HeadersVisibility="Column"/>
+                  HorizontalAlignment="Stretch" HeadersVisibility="Column" AutoGenerateColumns="False">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Date" 
+                                    Binding="{Binding Date, StringFormat=\{0:MM/dd/yyyy\}}" 
+                                    Width="Auto"/>
+
+                <DataGridTextColumn Header="Description" 
+                                    Binding="{Binding Description}" 
+                                    Width="*"/>
+
+                <DataGridTextColumn Header="Amount" 
+                                    Binding="{Binding Amount, StringFormat=C}" 
+                                    Width="100"/>
+
+                <DataGridTextColumn Header="Balance" 
+                                    Binding="{Binding Balance, StringFormat=C}" 
+                                    Width="100"/>
+            </DataGrid.Columns>
+        </DataGrid>
     </Grid>
 </UserControl>

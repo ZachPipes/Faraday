@@ -37,8 +37,18 @@ public partial class AccountTemplateView : UserControl {
 
         IEnumerable<TransactionDisplay> transactionDisplays =
             transactions as TransactionDisplay[] ?? transactions.ToArray();
-        double[] xs = transactionDisplays.Select(t => t.Date.ToOADate()).ToArray();
-        decimal[] ys = transactionDisplays.Select(t => t.Balance).ToArray();
+        var groupedTransactions = transactionDisplays
+            .GroupBy(t => t.Date.Date)
+            .Select(g => new 
+            { 
+                Date = g.Key.ToOADate(), 
+                TotalBalance = g.Sum(t => (double)t.Balance)
+            })
+            .OrderBy(g => g.Date)
+            .ToList();
+        
+        double[] xs = groupedTransactions.Select(g => g.Date).ToArray();
+        double[] ys = groupedTransactions.Select(g => g.TotalBalance).ToArray();
 
         AccountGraph.Plot.Add.Scatter(xs, ys);
         AccountGraph.Plot.Axes.DateTimeTicksBottom();
