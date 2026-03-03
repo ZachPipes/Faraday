@@ -12,6 +12,7 @@ public partial class SettingsViewModel : ViewModelBase {
     // Dependencies //
     // ============ //
     private readonly IAccountRepository _accountRepository;
+    private readonly IDialogService _dialogService;
 
 
     // ========= //
@@ -23,8 +24,10 @@ public partial class SettingsViewModel : ViewModelBase {
     // =========== //
     // Constructor //
     // =========== //
-    SettingsViewModel(IAccountRepository accountRepository) {
+    SettingsViewModel(IAccountRepository accountRepository, IDialogService dialogService) {
         _accountRepository = accountRepository;
+        _dialogService = dialogService;
+        
         Accounts = [];
 
         _ = LoadAccounts();
@@ -36,9 +39,14 @@ public partial class SettingsViewModel : ViewModelBase {
     // ======== //
     [RelayCommand]
     private async Task EditAccount(Account account) {
-        // TODO - Reuse AddAccount view or create new edit view(use outcome for adding transactions as well)
-        // await _accountRepository.UpdateAsync(account);
-        // await LoadAccounts();
+        DialogParameters parameters = new() { { "SelectedAccount", account } };
+        _dialogService.ShowDialog("EditAccountView", parameters, result => {
+            if (result.Result == ButtonResult.OK) {
+                _ = LoadAccounts();
+            }
+        });
+        await _accountRepository.UpdateAsync(account);
+        await LoadAccounts();
     }
 
     [RelayCommand]

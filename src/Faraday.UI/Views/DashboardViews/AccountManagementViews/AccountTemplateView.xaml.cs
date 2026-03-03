@@ -2,6 +2,8 @@
 using System.Windows.Controls;
 using Faraday.UI.Models;
 using Faraday.UI.ViewModels.DashboardViewModels.AccountManagementViewModels;
+using ScottPlot;
+using ScottPlot.Plottables;
 
 namespace Faraday.UI.Views.DashboardViews.AccountManagementViews;
 
@@ -100,6 +102,12 @@ public partial class AccountTemplateView : UserControl {
 
         AccountGraph.Plot.Add.Scatter(xs, ys);
         AccountGraph.Plot.Axes.DateTimeTicksBottom();
+        
+        HorizontalLine hLine = AccountGraph.Plot.Add.HorizontalLine(0);
+
+        hLine.LineWidth = 2;
+        hLine.LinePattern = LinePattern.Solid;
+        hLine.Color = Colors.Black;
 
         AccountGraph.Refresh();
     }

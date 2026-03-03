@@ -6,6 +6,7 @@ using CommunityToolkit.Mvvm.Input;
 using Faraday.Application.Interfaces;
 using Faraday.Domain.Entities;
 using Faraday.Domain.Enums;
+using Faraday.Domain.Exceptions;
 
 namespace Faraday.UI.ViewModels.DashboardViewModels;
 
@@ -61,13 +62,18 @@ public partial class DashboardViewModel : ViewModelBase, INavigationAware {
         foreach (Account account in await _accountRepository.GetAllActiveAsync()) {
             if (!account.IsActive) continue;
 
-            // Calculate balances for this account
-            if (account.Institution is InstitutionType.Commerce) {
-                _ = account.CalculateCurrentBalance(await _transactionRepository.GetByAccountIdAsync(account.Id));
-            }
-
-            if (account.Institution is InstitutionType.Fidelity) {
-                _ = account.CalculateCurrentBalance(await _stockRepository.GetByAccountIdAsync(account.Id));
+            switch (account.Institution) {
+                // Calculate balances for this account
+                case InstitutionType.Commerce:
+                    _ = account.CalculateCurrentBalance(await _transactionRepository.GetByAccountIdAsync(account.Id));
+                    break;
+                case InstitutionType.Fidelity:
+                    _ = account.CalculateCurrentBalance(await _stockRepository.GetByAccountIdAsync(account.Id));
+                    break;
+                case InstitutionType.Simmons:
+                case InstitutionType.Cash:
+                default:
+                    throw new InvalidAccountOperationException(account.Id, "Invalid account type used to view in dashboard");
             }
 
             ActiveAccounts.Add(account);

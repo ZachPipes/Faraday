@@ -1,7 +1,5 @@
 ﻿// src/Faraday.Domain/Entities/Account.cs
 
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Transactions;
 using Faraday.Domain.Common;
 using Faraday.Domain.Enums;
 using Faraday.Domain.Exceptions;

@@ -13,11 +13,9 @@ public partial class AccountTemplateViewModel : ViewModelBase, INavigationAware 
     // ======== //
     // Services //
     // ======== //
-    private readonly IWindowService _windowService;
     private readonly ITransactionRepository _transactionRepository;
     private readonly IAccountRepository _accountRepository;
     private readonly IStockRepository _stockRepository;
-    private readonly ICSVService _csvService;
     private readonly IDialogService _dialogService;
 
 
@@ -40,14 +38,12 @@ public partial class AccountTemplateViewModel : ViewModelBase, INavigationAware 
     // =========== //
     // Constructor //
     // =========== //
-    public AccountTemplateViewModel(IWindowService windowService, ITransactionRepository transactionRepository,
-        IAccountRepository accountRepository, IStockRepository stockRepository, ICSVService csvService, IDialogService dialogService) {
+    public AccountTemplateViewModel(ITransactionRepository transactionRepository, IAccountRepository accountRepository,
+        IStockRepository stockRepository, IDialogService dialogService) {
         // Dependency Injection
-        _windowService = windowService;
         _transactionRepository = transactionRepository;
         _accountRepository = accountRepository;
         _stockRepository = stockRepository;
-        _csvService = csvService;
         _dialogService = dialogService;
     }
 
@@ -91,7 +87,7 @@ public partial class AccountTemplateViewModel : ViewModelBase, INavigationAware 
                         Balance = rb.RunningBalance
                     });
                 break;
-            
+
             case InstitutionType.Fidelity:
                 transactionDisplays = _selectedAccount.GetRunningBalances(
                         await _stockRepository.GetByAccountIdAsync(_selectedAccount.Id))
@@ -102,7 +98,7 @@ public partial class AccountTemplateViewModel : ViewModelBase, INavigationAware 
                         Balance = rb.RunningBalance
                     });
                 break;
-            
+
             case InstitutionType.Simmons:
             case InstitutionType.Cash:
             default:
@@ -148,7 +144,7 @@ public partial class AccountTemplateViewModel : ViewModelBase, INavigationAware 
                         _ = LoadTransactions();
                     }
                 });
-                
+
                 // _csvFilePath = _windowService.ShowFilePicker();
                 // if (string.IsNullOrEmpty(_csvFilePath)) return;
                 //
@@ -180,7 +176,7 @@ public partial class AccountTemplateViewModel : ViewModelBase, INavigationAware 
                     //             throw new ArgumentOutOfRangeException(
                     //                 $"Institution passed is not an implemented type: Instituion {_selectedAccount.Institution}");
                     // }
-                    
+
                     _ = LoadTransactions();
                 }
                 catch (IOException ex) {
